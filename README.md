@@ -2,13 +2,15 @@
 
 ScoutX is a decentralized opportunity market platform that enables users to scout and trade on the potential of early-stage startups, protocols, and artists. It leverages an off-chain session management system to provide a gasless, instant trading experience, aligning with state channel architectures like Yellow Network.
 
-## 🏗 Architecture
+## Architecture
 
 The application is built as a Single Page Application (SPA) using React and Vite, with a focus on local-first state management for immediate user feedback.
 
+### System Overview
+
 ```mermaid
 graph TD
-    User[User] -->|Interacts| UI[Frontend UI (React + Vite)]
+    User[User] -->|Interacts| UI["Frontend UI (React + Vite)"]
     
     subgraph "Application Layer (src)"
         UI -->|State Management| Context[Context Providers]
@@ -20,18 +22,61 @@ graph TD
         end
         
         TradeCtx <-->|Off-chain Settlement| SessionMgr[Session Manager]
-        SessionMgr <-->|Persistence| LocalStore[(Browser Storage)]
+        SessionMgr <-->|Persistence| LocalStore[("Browser Storage")]
     end
     
     subgraph "External Services"
-        UI -->|Wallet Connection| Wagmi[Wagmi / Viem]
-        Wagmi -.->|On-chain Settlement| Blockchain[EVM / Sui Networks]
+        UI -->|Wallet Connection| Wagmi["Wagmi / Viem"]
+        Wagmi -.->|On-chain Settlement| Blockchain["EVM / Sui Networks"]
     end
 
-    classDef core fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef storage fill:#ff9,stroke:#333,stroke-width:2px;
-    class SessionMgr core;
+    classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef external fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    
+    class SessionMgr,Context,AuthCtx,MarketCtx,TradeCtx core;
     class LocalStore storage;
+    class Wagmi,Blockchain external;
+```
+
+### Trading Data Flow
+
+The following diagram illustrates the lifecycle of a trading session, from wallet connection to final on-chain settlement.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as Frontend
+    participant SM as Session Manager
+    participant Chain as Blockchain
+
+    User->>UI: Connect Wallet
+    UI->>Chain: Verify Account
+    
+    rect rgb(240, 248, 255)
+        note right of User: Session Start
+        User->>UI: Deposit into Market
+        UI->>SM: Open Session (Lock Funds)
+        SM-->>UI: Session Active
+    end
+
+    rect rgb(255, 250, 240)
+        note right of User: Off-Chain Trading
+        loop Rapid Trading
+            User->>UI: Place Trade (Buy YES)
+            UI->>SM: Sign & Record Trade
+            SM-->>UI: Update Position (Instant)
+        end
+    end
+
+    rect rgb(240, 255, 240)
+        note right of User: Settlement
+        User->>UI: Close Session
+        UI->>SM: Generate Settlement Hash
+        SM-->>UI: Return Hash
+        UI->>Chain: Commit Final State
+        Chain-->>UI: Transaction Confirmed
+    end
 ```
 
 ### Key Components
@@ -46,7 +91,7 @@ graph TD
     - `TradeContext`: Orchestrates trading sessions and positions.
     - `AuthContext`: Handles user authentication and wallet connection status.
 
-## ✨ Features
+## Features
 
 - **Opportunity Markets**: Create and trade on markets for VCs, DAOs, and Music Labels.
 - **Gasless Trading**: Off-chain session management allows for instant trades without paying gas for every action.
@@ -54,7 +99,7 @@ graph TD
 - **Portfolio Tracking**: Real-time tracking of active positions and trade history.
 - **Self-Trading Prevention**: Built-in logic to prevent market creators from trading on their own markets to ensure fairness.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
@@ -63,7 +108,7 @@ graph TD
 - **Web3**: [Wagmi](https://wagmi.sh/) + [Viem](https://viem.sh/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -91,7 +136,7 @@ graph TD
 4.  **Open in Browser**
     Navigate to `http://localhost:8080` to view the application.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 scoutx-dashboard-main/
