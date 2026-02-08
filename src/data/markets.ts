@@ -6,6 +6,7 @@ export interface Market {
   escrowAmount: string;
   windowRemaining: string;
   sponsor: string;
+  createdByUser?: boolean; // true if current user created this market
 }
 
 export const markets: Market[] = [

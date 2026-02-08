@@ -61,6 +61,7 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
     const newMarket: Market = {
       ...marketData,
       id: generateId(),
+      createdByUser: true, // Mark as user-created to prevent self-trading
     };
     setUserMarkets((prev) => [...prev, newMarket]);
   };

@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Login with wallet
   const loginWithWallet = () => {
     setAuthMethod('wallet');
+    setDemoLoggedIn(false); // Clear demo mode when switching to wallet
     localStorage.setItem('scoutx_auth_method', 'wallet');
     open();
   };

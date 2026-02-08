@@ -110,6 +110,7 @@ const MarketDetail = () => {
                 marketId={market.id} 
                 marketName={market.name} 
                 escrowAmount={parseEscrowAmount(market.escrowAmount)}
+                isOwnMarket={market.createdByUser}
               />
             </div>
           </div>

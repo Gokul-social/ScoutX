@@ -9,9 +9,10 @@ interface TradePanelProps {
   marketId: string;
   marketName: string;
   escrowAmount: number; // Escrow amount in raw number format
+  isOwnMarket?: boolean; // true if current user created this market
 }
 
-const TradePanel = ({ marketId, marketName, escrowAmount }: TradePanelProps) => {
+const TradePanel = ({ marketId, marketName, escrowAmount, isOwnMarket }: TradePanelProps) => {
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { executeTrade, getPosition, balance, getMaxTradeAmount } = useTrades();
@@ -19,6 +20,25 @@ const TradePanel = ({ marketId, marketName, escrowAmount }: TradePanelProps) => 
   const position = getPosition(marketId);
   const maxTradeAmount = getMaxTradeAmount(escrowAmount);
   const escrowLimit = escrowAmount * MAX_TRADE_ESCROW_PERCENTAGE;
+
+  // Block trading on own markets
+  if (isOwnMarket) {
+    return (
+      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-6">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+          <div>
+            <h3 className="mb-1 text-sm font-semibold text-amber-400">
+              Trading Restricted
+            </h3>
+            <p className="text-xs leading-relaxed text-amber-500/80">
+              You cannot trade on markets you created. This prevents conflicts of interest and market manipulation.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleTrade = async () => {
     // Validate amount
