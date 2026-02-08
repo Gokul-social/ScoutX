@@ -30,9 +30,9 @@ graph TD
         Wagmi -.->|On-chain Settlement| Blockchain["EVM / Sui Networks"]
     end
 
-    classDef core fill:#dbeafe,stroke:#2563eb,stroke-width:2px;
-    classDef storage fill:#fce7f3,stroke:#db2777,stroke-width:2px;
-    classDef external fill:#d1fae5,stroke:#059669,stroke-width:2px;
+    classDef core fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#fff;
+    classDef storage fill:#4a044e,stroke:#f472b6,stroke-width:2px,color:#fff;
+    classDef external fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff;
 
     class SessionMgr,Context,AuthCtx,MarketCtx,TradeCtx core;
     class LocalStore storage;
@@ -53,14 +53,14 @@ sequenceDiagram
     User->>UI: Connect Wallet
     UI->>Chain: Verify Account
 
-    rect rgb(239, 246, 255)
+    rect rgb(23, 37, 84)
         note right of User: Session Start
         User->>UI: Deposit into Market
         UI->>SM: Open Session (Lock Funds)
         SM-->>UI: Session Active
     end
 
-    rect rgb(255, 241, 242)
+    rect rgb(74, 4, 78)
         note right of User: Off-Chain Trading
         loop Rapid Trading
             User->>UI: Place Trade (Buy YES)
@@ -69,7 +69,7 @@ sequenceDiagram
         end
     end
 
-    rect rgb(240, 253, 244)
+    rect rgb(6, 78, 59)
         note right of User: Settlement
         User->>UI: Close Session
         UI->>SM: Generate Settlement Hash
