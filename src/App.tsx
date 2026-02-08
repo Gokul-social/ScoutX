@@ -8,11 +8,13 @@ import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/lib/wagmiConfig";
 import { AuthProvider } from "@/context/AuthContext";
 import { MarketProvider } from "@/context/MarketContext";
+import { TradeProvider } from "@/context/TradeContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Markets from "./pages/Markets";
 import MarketDetail from "./pages/MarketDetail";
 import CreateMarket from "./pages/CreateMarket";
+import MyTrades from "./pages/MyTrades";
 import Docs from "./pages/Docs";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -25,21 +27,24 @@ const App = () => (
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <MarketProvider>
-            <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-                <Route path="/markets" element={<ProtectedRoute><Markets /></ProtectedRoute>} />
-                <Route path="/markets/:id" element={<ProtectedRoute><MarketDetail /></ProtectedRoute>} />
-                <Route path="/create" element={<ProtectedRoute><CreateMarket /></ProtectedRoute>} />
-                <Route path="/docs" element={<ProtectedRoute><Docs /></ProtectedRoute>} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
+            <TradeProvider>
+              <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                  <Route path="/markets" element={<ProtectedRoute><Markets /></ProtectedRoute>} />
+                  <Route path="/markets/:id" element={<ProtectedRoute><MarketDetail /></ProtectedRoute>} />
+                  <Route path="/create" element={<ProtectedRoute><CreateMarket /></ProtectedRoute>} />
+                  <Route path="/trades" element={<ProtectedRoute><MyTrades /></ProtectedRoute>} />
+                  <Route path="/docs" element={<ProtectedRoute><Docs /></ProtectedRoute>} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+            </TradeProvider>
           </MarketProvider>
         </AuthProvider>
       </QueryClientProvider>

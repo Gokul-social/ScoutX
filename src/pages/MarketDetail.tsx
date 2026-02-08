@@ -12,6 +12,12 @@ const sponsorTypeStyles: Record<string, string> = {
   Label: "border-amber-500/30 bg-amber-500/10 text-amber-400",
 };
 
+// Parse escrow amount string like "50,000 USDC" to number
+const parseEscrowAmount = (escrow: string): number => {
+  const numericString = escrow.replace(/[^0-9.]/g, '');
+  return parseFloat(numericString) || 0;
+};
+
 const MarketDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { getMarketById } = useMarkets();
@@ -100,7 +106,11 @@ const MarketDetail = () => {
 
             {/* Right column - Trade Panel */}
             <div className="lg:sticky lg:top-24">
-              <TradePanel />
+              <TradePanel 
+                marketId={market.id} 
+                marketName={market.name} 
+                escrowAmount={parseEscrowAmount(market.escrowAmount)}
+              />
             </div>
           </div>
         </div>

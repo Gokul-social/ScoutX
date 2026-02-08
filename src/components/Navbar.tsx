@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 const navLinks = [
   { label: "Markets", to: "/markets" },
   { label: "Create Market", to: "/create" },
+  { label: "My Trades", to: "/trades" },
   { label: "Docs", to: "/docs" },
 ];
 

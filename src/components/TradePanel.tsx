@@ -1,10 +1,56 @@
 import { useState } from "react";
-import { Info } from "lucide-react";
+import { Info, Loader2, TrendingUp, Wallet, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTrades, MAX_TRADE_ESCROW_PERCENTAGE } from "@/context/TradeContext";
+import { toast } from "sonner";
 
-const TradePanel = () => {
+interface TradePanelProps {
+  marketId: string;
+  marketName: string;
+  escrowAmount: number; // Escrow amount in raw number format
+}
+
+const TradePanel = ({ marketId, marketName, escrowAmount }: TradePanelProps) => {
   const [amount, setAmount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { executeTrade, getPosition, balance, getMaxTradeAmount } = useTrades();
+
+  const position = getPosition(marketId);
+  const maxTradeAmount = getMaxTradeAmount(escrowAmount);
+  const escrowLimit = escrowAmount * MAX_TRADE_ESCROW_PERCENTAGE;
+
+  const handleTrade = async () => {
+    // Validate amount
+    const numAmount = parseFloat(amount);
+    if (!amount.trim() || isNaN(numAmount) || numAmount <= 0) {
+      toast.error("Please enter a valid amount greater than 0");
+      return;
+    }
+
+    // Check against balance
+    if (numAmount > balance) {
+      toast.error(`Insufficient balance. You have ${balance.toLocaleString()} USDC`);
+      return;
+    }
+
+    // Check against escrow limit (10% of escrow)
+    if (numAmount > escrowLimit) {
+      toast.error(`Maximum trade is ${escrowLimit.toLocaleString()} USDC (10% of escrow)`);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await executeTrade(marketId, marketName, numAmount, "YES");
+      toast.success(`Successfully bought ${numAmount.toLocaleString()} USDC position`);
+      setAmount(""); // Clear input after success
+    } catch (error) {
+      toast.error("Trade failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="rounded-lg border border-border bg-card p-6">
@@ -13,21 +59,71 @@ const TradePanel = () => {
       </h3>
 
       <div className="space-y-4">
+        {/* Wallet Balance */}
+        <div className="flex items-center justify-between rounded-md bg-secondary px-3 py-2">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Wallet className="h-3.5 w-3.5" />
+            <span>Your Balance</span>
+          </div>
+          <span className="font-mono text-sm font-semibold text-foreground">
+            {balance.toLocaleString()} USDC
+          </span>
+        </div>
+
+        {/* Current Position */}
+        {position && (
+          <div className="flex items-center justify-between rounded-md bg-primary/10 px-3 py-2">
+            <div className="flex items-center gap-2 text-xs text-primary">
+              <TrendingUp className="h-3.5 w-3.5" />
+              <span>Your Position</span>
+            </div>
+            <span className="font-mono text-sm font-semibold text-primary">
+              {position.totalAmount.toLocaleString()} USDC
+            </span>
+          </div>
+        )}
+
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
-            Amount (USDC)
-          </label>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground">
+              Amount (USDC)
+            </label>
+            <span className="text-[10px] text-muted-foreground">
+              Max: {maxTradeAmount.toLocaleString()} USDC
+            </span>
+          </div>
           <Input
             type="text"
             placeholder="0.00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="font-mono"
+            disabled={isLoading}
           />
         </div>
 
-        <Button className="w-full font-semibold" size="lg">
-          Buy YES
+        {/* Escrow limit warning */}
+        <div className="flex items-start gap-2 rounded-md bg-amber-500/10 px-3 py-2">
+          <AlertCircle className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+          <p className="text-[10px] leading-relaxed text-amber-500">
+            Max trade: 10% of escrow ({escrowLimit.toLocaleString()} USDC)
+          </p>
+        </div>
+
+        <Button
+          className="w-full font-semibold"
+          size="lg"
+          onClick={handleTrade}
+          disabled={isLoading || balance === 0}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            "Buy YES"
+          )}
         </Button>
 
         <div className="flex items-start gap-2 rounded-md bg-secondary p-3">
@@ -42,3 +138,5 @@ const TradePanel = () => {
 };
 
 export default TradePanel;
+
+
