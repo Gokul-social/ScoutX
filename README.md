@@ -11,29 +11,29 @@ The application is built as a Single Page Application (SPA) using React and Vite
 ```mermaid
 graph TD
     User[User] -->|Interacts| UI["Frontend UI (React + Vite)"]
-    
+
     subgraph "Application Layer (src)"
         UI -->|State Management| Context[Context Providers]
-        
+
         subgraph "Context Layer"
             Context -->|Authentication| AuthCtx[AuthContext]
             Context -->|Market Data| MarketCtx[MarketContext]
             Context -->|Trade Execution| TradeCtx[TradeContext]
         end
-        
+
         TradeCtx <-->|Off-chain Settlement| SessionMgr[Session Manager]
         SessionMgr <-->|Persistence| LocalStore[("Browser Storage")]
     end
-    
+
     subgraph "External Services"
         UI -->|Wallet Connection| Wagmi["Wagmi / Viem"]
         Wagmi -.->|On-chain Settlement| Blockchain["EVM / Sui Networks"]
     end
 
-    classDef core fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef storage fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    classDef external fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
-    
+    classDef core fill:#dbeafe,stroke:#2563eb,stroke-width:2px;
+    classDef storage fill:#fce7f3,stroke:#db2777,stroke-width:2px;
+    classDef external fill:#d1fae5,stroke:#059669,stroke-width:2px;
+
     class SessionMgr,Context,AuthCtx,MarketCtx,TradeCtx core;
     class LocalStore storage;
     class Wagmi,Blockchain external;
@@ -52,15 +52,15 @@ sequenceDiagram
 
     User->>UI: Connect Wallet
     UI->>Chain: Verify Account
-    
-    rect rgb(240, 248, 255)
+
+    rect rgb(239, 246, 255)
         note right of User: Session Start
         User->>UI: Deposit into Market
         UI->>SM: Open Session (Lock Funds)
         SM-->>UI: Session Active
     end
 
-    rect rgb(255, 250, 240)
+    rect rgb(255, 241, 242)
         note right of User: Off-Chain Trading
         loop Rapid Trading
             User->>UI: Place Trade (Buy YES)
@@ -69,7 +69,7 @@ sequenceDiagram
         end
     end
 
-    rect rgb(240, 255, 240)
+    rect rgb(240, 253, 244)
         note right of User: Settlement
         User->>UI: Close Session
         UI->>SM: Generate Settlement Hash
@@ -83,13 +83,13 @@ sequenceDiagram
 
 - **Frontend UI**: Built with React, TypeScript, and Tailwind CSS (using shadcn/ui components). Handles user interaction and visualization.
 - **Session Manager (`backend/sessionManager.ts`)**: A local simulation of off-chain state channels. It manages:
-    - **Session Opening**: Funding a channel (deposit).
-    - **Trading**: Off-chain state transitions (gasless trades).
-    - **Settlement**: Preparing final state hashes for on-chain commitment.
+  - **Session Opening**: Funding a channel (deposit).
+  - **Trading**: Off-chain state transitions (gasless trades).
+  - **Settlement**: Preparing final state hashes for on-chain commitment.
 - **Context Layer**:
-    - `MarketContext`: Manages market data and listings.
-    - `TradeContext`: Orchestrates trading sessions and positions.
-    - `AuthContext`: Handles user authentication and wallet connection status.
+  - `MarketContext`: Manages market data and listings.
+  - `TradeContext`: Orchestrates trading sessions and positions.
+  - `AuthContext`: Handles user authentication and wallet connection status.
 
 ## Features
 
@@ -118,17 +118,20 @@ sequenceDiagram
 ### Installation
 
 1.  **Clone the repository**
+
     ```bash
     git clone <repository-url>
     cd scoutx-dashboard-main
     ```
 
 2.  **Install dependencies**
+
     ```bash
     npm install
     ```
 
 3.  **Start the development server**
+
     ```bash
     npm run dev
     ```
