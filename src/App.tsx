@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { WagmiProvider } from "wagmi";
+import { wagmiConfig } from "@/lib/wagmiConfig";
 import Index from "./pages/Index";
 import Markets from "./pages/Markets";
 import MarketDetail from "./pages/MarketDetail";
@@ -15,22 +17,24 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <ThemeProvider attribute="class" defaultTheme="dark">
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/markets" element={<Markets />} />
-            <Route path="/markets/:id" element={<MarketDetail />} />
-            <Route path="/create" element={<CreateMarket />} />
-            <Route path="/docs" element={<Docs />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/markets" element={<Markets />} />
+              <Route path="/markets/:id" element={<MarketDetail />} />
+              <Route path="/create" element={<CreateMarket />} />
+              <Route path="/docs" element={<Docs />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </ThemeProvider>
 );
 
