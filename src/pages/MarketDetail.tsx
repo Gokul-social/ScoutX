@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Layout from "@/components/Layout";
 import TradePanel from "@/components/TradePanel";
-import { markets } from "@/data/markets";
+import { useMarkets } from "@/context/MarketContext";
 
 const sponsorTypeStyles: Record<string, string> = {
   VC: "border-primary/30 bg-primary/10 text-accent-foreground",
@@ -14,7 +14,8 @@ const sponsorTypeStyles: Record<string, string> = {
 
 const MarketDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const market = markets.find((m) => m.id === id);
+  const { getMarketById } = useMarkets();
+  const market = id ? getMarketById(id) : undefined;
 
   if (!market) {
     return (

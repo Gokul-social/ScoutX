@@ -5,7 +5,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 
 // Demo user data
@@ -27,8 +27,10 @@ interface AuthContextType {
     displayName: string;
     balance: string;
   } | null;
+  fullAddress: string | undefined;
   loginAsDemo: () => void;
   loginWithWallet: () => void;
+  switchWallet: () => void;
   logout: () => void;
 }
 
@@ -47,6 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const { address, isConnected } = useAccount();
+  const { disconnect: wagmiDisconnect } = useDisconnect();
   const { open } = useWeb3Modal();
 
   // Determine if user is authenticated
@@ -77,8 +80,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     open();
   };
 
-  // Logout
+  // Switch wallet - disconnect current and open modal for new connection
+  const switchWallet = () => {
+    if (isConnected) {
+      wagmiDisconnect();
+    }
+    // Open modal to connect a different wallet
+    setTimeout(() => {
+      open();
+    }, 100);
+  };
+
+  // Logout - disconnect wallet and clear all auth state
   const logout = () => {
+    if (isConnected) {
+      wagmiDisconnect();
+    }
     setAuthMethod(null);
     setDemoLoggedIn(false);
     localStorage.removeItem('scoutx_auth_method');
@@ -101,8 +118,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated,
         authMethod: demoLoggedIn ? 'demo' : isConnected ? 'wallet' : null,
         user,
+        fullAddress: address,
         loginAsDemo,
         loginWithWallet,
+        switchWallet,
         logout,
       }}
     >
@@ -119,3 +138,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

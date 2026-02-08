@@ -1,8 +1,16 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Wallet, Circle } from "lucide-react";
+import { Sun, Moon, Wallet, Circle, LogOut, RefreshCw, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useWallet } from "@/hooks/useWallet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "Markets", to: "/markets" },
@@ -12,8 +20,22 @@ const navLinks = [
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { isConnected, address, connect, disconnect } = useWallet();
+  const { isAuthenticated, authMethod, user, logout, switchWallet, loginWithWallet } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  const handleSwitchWallet = () => {
+    switchWallet();
+  };
+
+  const handleConnectWallet = () => {
+    loginWithWallet();
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
@@ -57,18 +79,64 @@ const Navbar = () => {
             <span className="sr-only">Toggle theme</span>
           </Button>
 
-          {isConnected ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={disconnect}
-              className="gap-2 font-mono text-xs"
-            >
-              <Wallet className="h-3.5 w-3.5" />
-              {address}
-            </Button>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 font-mono text-xs"
+                >
+                  {authMethod === 'demo' ? (
+                    <>
+                      <User className="h-3.5 w-3.5" />
+                      Demo Mode
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="h-3.5 w-3.5" />
+                      {user?.address}
+                    </>
+                  )}
+                  <ChevronDown className="h-3 w-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-medium">{user?.displayName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {authMethod === 'demo' ? 'Demo Account' : user?.address}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                
+                {authMethod === 'demo' ? (
+                  <DropdownMenuItem onClick={handleConnectWallet} className="gap-2 cursor-pointer">
+                    <Wallet className="h-4 w-4" />
+                    Connect Wallet
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={handleSwitchWallet} className="gap-2 cursor-pointer">
+                    <RefreshCw className="h-4 w-4" />
+                    Switch Wallet
+                  </DropdownMenuItem>
+                )}
+                
+                <DropdownMenuSeparator />
+                
+                <DropdownMenuItem 
+                  onClick={handleLogout} 
+                  className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <Button size="sm" onClick={connect} className="gap-2">
+            <Button size="sm" onClick={handleConnectWallet} className="gap-2">
               <Wallet className="h-3.5 w-3.5" />
               Connect Wallet
             </Button>
@@ -80,3 +148,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

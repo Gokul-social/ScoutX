@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/lib/wagmiConfig";
 import { AuthProvider } from "@/context/AuthContext";
+import { MarketProvider } from "@/context/MarketContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Markets from "./pages/Markets";
@@ -23,7 +24,8 @@ const App = () => (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <TooltipProvider>
+          <MarketProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -38,6 +40,7 @@ const App = () => (
               </Routes>
             </BrowserRouter>
           </TooltipProvider>
+          </MarketProvider>
         </AuthProvider>
       </QueryClientProvider>
     </WagmiProvider>

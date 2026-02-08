@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/Layout";
 import MarketCard from "@/components/MarketCard";
-import { markets } from "@/data/markets";
+import { useMarkets } from "@/context/MarketContext";
 import type { Market } from "@/data/markets";
 
 const sponsorTypes: Array<Market["sponsorType"] | "All"> = ["All", "VC", "DAO", "Label"];
 
 const Markets = () => {
+  const { markets } = useMarkets();
   const [filter, setFilter] = useState<Market["sponsorType"] | "All">("All");
   const [search, setSearch] = useState("");
 
