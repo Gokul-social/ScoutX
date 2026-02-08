@@ -130,14 +130,14 @@ const CreateMarket = () => {
                 <SelectContent>
                   {sponsorTypes.map((type) => (
                     <SelectItem key={type.value} value={type.value}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{type.label}</span>
-                        <span className="text-xs text-muted-foreground">{type.description}</span>
-                      </div>
+                      {type.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                {sponsorTypes.find((t) => t.value === sponsorType)?.description}
+              </p>
             </div>
 
             {/* Sponsor Name Input */}
